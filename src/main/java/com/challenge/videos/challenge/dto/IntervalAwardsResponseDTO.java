@@ -14,8 +14,8 @@ import java.util.List;
 @SuperBuilder
 public class IntervalAwardsResponseDTO {
 
-    private List<ProducerResponseDTO> max = new ArrayList<>();
     private List<ProducerResponseDTO> min = new ArrayList<>();
+    private List<ProducerResponseDTO> max = new ArrayList<>();
 
     public void addMin(ProducerResponseDTO producerResponseDTO) {
         this.min.add(producerResponseDTO);
