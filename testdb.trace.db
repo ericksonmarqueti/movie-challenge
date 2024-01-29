@@ -1,0 +1,12 @@
+2024-01-26 14:44:59.447188-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table movie (id bigint not null, producers varchar(255), studios varchar(255), title varchar(255), winner boolean, [*]year bigint, primary key (id))"; expected "identifier"; SQL statement:
+create table movie (id bigint not null, producers varchar(255), studios varchar(255), title varchar(255), winner boolean, year bigint, primary key (id)) [42001-224]
+2024-01-26 14:45:38.907552-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table movie (id bigint not null, producers varchar(255), studios varchar(255), title varchar(255), winner boolean, [*]year bigint, primary key (id))"; expected "identifier"; SQL statement:
+create table movie (id bigint not null, producers varchar(255), studios varchar(255), title varchar(255), winner boolean, year bigint, primary key (id)) [42001-224]
+2024-01-26 14:56:59.623511-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table movie (id bigint not null, producers varchar(255), studios varchar(255), title varchar(255), winner boolean, [*]year bigint, primary key (id))"; expected "identifier"; SQL statement:
+create table movie (id bigint not null, producers varchar(255), studios varchar(255), title varchar(255), winner boolean, year bigint, primary key (id)) [42001-224]
+2024-01-26 15:15:37.526654-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table movie (id bigint not null, producers varchar(255), studios varchar(255), title varchar(255), winner boolean, [*]year bigint, primary key (id))"; expected "identifier"; SQL statement:
+create table movie (id bigint not null, producers varchar(255), studios varchar(255), title varchar(255), winner boolean, year bigint, primary key (id)) [42001-224]
