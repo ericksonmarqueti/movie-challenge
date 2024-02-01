@@ -77,7 +77,7 @@ public class MovieServiceImpl implements MovieService {
     public IntervalAwardsResponseDTO getIntervals() {
         IntervalAwardsResponseDTO responseDTO = new IntervalAwardsResponseDTO();
 
-        Map<String, LinkedList<Long>> winners = new HashMap<>();
+        Map<String, List<Long>> winners = new HashMap<>();
 
         List<Movie> movies = findAll()
                 .stream()
@@ -91,52 +91,53 @@ public class MovieServiceImpl implements MovieService {
                 if (wins != null) {
                     wins.add(movie.getYear());
                 } else {
-                    winners.put(name, new LinkedList<>(Arrays.asList(movie.getYear())));
+                    winners.put(name, new ArrayList<>(Arrays.asList(movie.getYear())));
                 }
             }
         }
 
-        for (Map.Entry<String, LinkedList<Long>> entry : winners.entrySet()) {
-            List<Long> years = entry.getValue();
+        List<ProducerResponseDTO> intervalWins = new ArrayList<>();
+        for (Map.Entry<String, List<Long>> winner : winners.entrySet()) {
+            List<Long> years = winner.getValue();
             Collections.sort(years);
             if (years.size() > 1) {
-                List<Long> consecutiveYears = extractConsecutiveYears(years);
-                if (consecutiveYears != null && !consecutiveYears.isEmpty()) {
-                    responseDTO.addMin(createDTO(entry, consecutiveYears));
-                }
-                responseDTO.addMax(createDTO(entry, years));
+                intervalWins.addAll(extractIntervals(winner.getKey(), years));
             }
         }
 
-        responseDTO.setMax(Arrays.asList(responseDTO.getMax().stream().max(Comparator.comparing(ProducerResponseDTO::getInterval)).get()));
+        Long lowerWinner = intervalWins.stream().mapToLong(ProducerResponseDTO::getInterval).min().getAsLong();
+        Long higherWinner = intervalWins.stream().mapToLong(ProducerResponseDTO::getInterval).max().getAsLong();
+
+        responseDTO.setMin(intervalWins.stream()
+                .filter(f -> f.getInterval() == lowerWinner)
+                .collect(Collectors.toList()));
+
+        responseDTO.setMax(intervalWins.stream()
+                .filter(f -> f.getInterval() == higherWinner)
+                .collect(Collectors.toList()));
 
         return responseDTO;
     }
 
-    private ProducerResponseDTO createDTO(Map.Entry<String, LinkedList<Long>> entry, List<Long> years) {
-        Long min = Collections.min(years);
-        Long max = Collections.max(years);
-        Long interval = max - min;
+    private ProducerResponseDTO createDTO(String producer, Long previousWin, Long followingWin) {
+        Long interval = followingWin - previousWin;
 
         ProducerResponseDTO dto = new ProducerResponseDTO();
-        dto.setProducer(entry.getKey());
+        dto.setProducer(producer);
         dto.setInterval(interval);
-        dto.setPreviousWin(min);
-        dto.setFollowingWin(max);
+        dto.setPreviousWin(previousWin);
+        dto.setFollowingWin(followingWin);
         return dto;
     }
 
-    private List<Long> extractConsecutiveYears(List<Long> years) {
-        Set<Long> consecutiveYears = new HashSet<>();
+    private List<ProducerResponseDTO> extractIntervals(String producer, List<Long> years) {
+        List<ProducerResponseDTO> producers = new ArrayList<>();
         for (int i = 0; i < years.size() - 1; i++) {
             Long current = years.get(i);
             Long next = years.get(i + 1);
-            if (current == next - 1) {
-                consecutiveYears.add(current);
-                consecutiveYears.add(next);
-            }
+            producers.add(createDTO(producer, current, next));
         }
-        return consecutiveYears.stream().collect(Collectors.toList());
+        return producers;
     }
 }
 
