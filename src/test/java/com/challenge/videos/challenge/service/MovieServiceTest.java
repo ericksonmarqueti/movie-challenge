@@ -47,9 +47,10 @@ public class MovieServiceTest {
 
         IntervalAwardsResponseDTO intervals = movieService.getIntervals();
 
-        assertProducer("Allan Carr", 1, 1980, 1981, intervals.getMin().get(0));
-        assertProducer("Bo Derek", 6, 1984, 1990, intervals.getMax().get(0));
-        assertProducer("Allan Carr", 4, 1980, 1984, intervals.getMax().get(1));
+        assertEquals(1, intervals.getMin().size());
+        assertEquals(1, intervals.getMax().size());
+        assertProducer("Joel Silver", 1, 1990, 1991, intervals.getMin().get(0));
+        assertProducer("Matthew Vaughn", 13, 2002, 2015, intervals.getMax().get(0));
     }
 
     private static void assertProducer(String producer, int interval, int previousWin, int followingWin, ProducerResponseDTO producerDTO) {

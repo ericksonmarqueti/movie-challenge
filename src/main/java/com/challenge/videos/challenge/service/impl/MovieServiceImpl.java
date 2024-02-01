@@ -4,6 +4,7 @@ import com.challenge.videos.challenge.dto.IntervalAwardsResponseDTO;
 import com.challenge.videos.challenge.dto.ProducerResponseDTO;
 import com.challenge.videos.challenge.helper.CSVHelper;
 import com.challenge.videos.challenge.model.Movie;
+import com.challenge.videos.challenge.model.MovieProducer;
 import com.challenge.videos.challenge.repository.MovieRepository;
 import com.challenge.videos.challenge.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,11 +85,14 @@ public class MovieServiceImpl implements MovieService {
                 .collect(Collectors.toList());
 
         for (Movie movie : movies) {
-            List<Long> wins = winners.get(movie.getProducers());
-            if (wins != null) {
-                wins.add(movie.getYear());
-            } else {
-                winners.put(movie.getProducers(), new LinkedList<>(Arrays.asList(movie.getYear())));
+            for (MovieProducer movieProducer : movie.getProducers()) {
+                String name = movieProducer.getProducer().getName();
+                List<Long> wins = winners.get(name);
+                if (wins != null) {
+                    wins.add(movie.getYear());
+                } else {
+                    winners.put(name, new LinkedList<>(Arrays.asList(movie.getYear())));
+                }
             }
         }
 
@@ -98,13 +102,13 @@ public class MovieServiceImpl implements MovieService {
             if (years.size() > 1) {
                 List<Long> consecutiveYears = extractConsecutiveYears(years);
                 if (consecutiveYears != null && !consecutiveYears.isEmpty()) {
-                    ProducerResponseDTO dto = createDTO(entry, consecutiveYears);
-                    responseDTO.addMin(dto);
+                    responseDTO.addMin(createDTO(entry, consecutiveYears));
                 }
-                ProducerResponseDTO dto = createDTO(entry, years);
-                responseDTO.addMax(dto);
+                responseDTO.addMax(createDTO(entry, years));
             }
         }
+
+        responseDTO.setMax(Arrays.asList(responseDTO.getMax().stream().max(Comparator.comparing(ProducerResponseDTO::getInterval)).get()));
 
         return responseDTO;
     }
